@@ -1,19 +1,8 @@
 import type { APIRoute } from 'astro';
+import { fetchJson } from '../../functions/fetchJsonMWDP';
 
 export const GET: APIRoute = async () => {
-  const TMDB_API_TOKEN = import.meta.env.PUBLIC_TMDB_API_TOKEN;
   const MAX_PAGE = 500;
-
-  const fetchJson = async (url: string) => {
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${TMDB_API_TOKEN}`,
-        accept: 'application/json',
-      },
-    });
-    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-    return res.json();
-  };
 
   try {
     const firstPage = await fetchJson(`https://api.themoviedb.org/3/movie/popular`);

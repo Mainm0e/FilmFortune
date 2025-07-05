@@ -1,0 +1,44 @@
+---
+---
+
+<script>
+  const baseUrl = "https://image.tmdb.org/t/p/w500";
+  const btn = document.getElementById("randomBtn");
+  const titleEl = document.getElementById("title");
+  const releaseEl = document.getElementById("release");
+  const posterEl = document.getElementById("poster");
+  const backdropEl = document.getElementById("backdrop");
+  const overviewEl = document.getElementById("overview");
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Loading...";
+    try {
+      const res = await fetch("/api/random-movie");
+      const movie = await res.json();
+
+      titleEl.textContent = movie.title;
+      releaseEl.textContent = "Released: " + movie.release_date;
+      overviewEl.textContent = movie.overview || "";
+
+      if (movie.poster_path) {
+        posterEl.src = baseUrl + movie.poster_path;
+        posterEl.alt = `Poster of ${movie.title}`;
+      } else {
+        posterEl.src = "";
+        posterEl.alt = "No poster";
+      }
+
+      if (movie.backdrop_path) {
+        backdropEl.style.backgroundImage = `url(${baseUrl + movie.backdrop_path})`;
+      } else {
+        backdropEl.style.backgroundImage = "";
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to get a random movie");
+    }
+    btn.disabled = false;
+    btn.textContent = "Pick Another Random Movie";
+  });
+</script>
