@@ -3,6 +3,7 @@ import { fetchJson } from "../functions/fetchJsonMWDP";
 import Image from "astro/components/Image.astro";
 
 let movie = null;
+let popularMovies = [];
 
 try {
   const MAX_PAGE = 500;
@@ -11,7 +12,6 @@ try {
   );
   const totalPages = Math.min(firstPageData.total_pages || 1, MAX_PAGE);
 
-  // Get today's date as YYYYMMDD number
   const today = new Date();
   const seed = parseInt(
     `${today.getFullYear()}${(today.getMonth() + 1)
@@ -19,43 +19,81 @@ try {
       .padStart(2, "0")}${today.getDate().toString().padStart(2, "0")}`
   );
 
-  // Use seed to pick a page and index
   const randomPage = (seed % totalPages) + 1;
   const randomPageData = await fetchJson(
     `https://api.themoviedb.org/3/movie/popular?page=${randomPage}`
   );
   const movies = randomPageData.results || [];
 
-  // Pick index using seed again but based on movies length
   const movieIndex = seed % movies.length;
   movie = movies[movieIndex];
+
+  // Get first 4 for the poster row
+  popularMovies = movies.slice(0, 10);
 } catch (err) {
   console.error(err);
 }
 
-const baseUrl = "https://image.tmdb.org/t/p/w500";
+const backdropBase = "https://image.tmdb.org/t/p/original";
+const posterBase = "https://image.tmdb.org/t/p/w500";
 ---
 
 <section
-  id="random-movie-section"
-  class="relative flex flex-col items-center justify-center min-h-screen px-6 py-12 overflow-hidden bg-gray-900 text-white"
+  id="hero"
+  class="relative min-h-screen flex items-center px-10 py-20 text-white overflow-hidden"
+  style={`background-image: url(${backdropBase + movie.backdrop_path}); background-size: cover; background-position: center;`}
 >
-  {
-    movie?.backdrop_path && (
-      <div
-        class="absolute inset-0 bg-center bg-cover"
-        id="backdrop"
-        style={`background-image: url(${baseUrl + movie.backdrop_path});`}
-      >
-        <div class="absolute inset-0 bg-black opacity-70 backdrop-blur-sm" />
-      </div>
-    )
-  }
-
   <div
-  class="relative z-10 max-w-4xl w-full  rounded-lg p-8 flex flex-col md:flex-row items-center md:items-start gap-8"
+    class="relative z-10 flex flex-col md:flex-row justify-between w-full max-w-7xl mx-auto gap-10"
   >
-   
+    <!-- Left: Movie Info -->
+    <div class="flex flex-col max-w-xl">
+      <h1 id="title" class="text-5xl font-bold mb-4" >{movie?.title}</h1>
+      <div class="flex items-center text-sm text-gray-300 mb-4">
+        <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
+        <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
+        <span id="vote-count">⏱️ {movie?.vote_count} votes</span>
+      </div>
+      <p class="text-gray-200 mb-8" id="overview">{movie?.overview}</p>
+      <div class="flex gap-4">
+        <button
+          class="bg-yellow-500 text-black px-6 py-3 rounded-md font-semibold hover:bg-yellow-600 transition"
+          id="randomBtn">🔃 Random</button
+        >
+        <button
+          class="border border-yellow-500 px-6 py-3 rounded-md font-semibold hover:bg-yellow-500 hover:text-black transition"
+          >💾 Save For Later</button
+        >
+      </div>
+    </div>
+
+    <!-- Right: Movie Posters -->
+    <div class="flex gap-6 overflow-x-auto w-1/2">
+      {
+        popularMovies.map((p) => (
+          <div class="flex-shrink-0 w-40">
+            <Image
+              src={posterBase + p.poster_path}
+              alt={p.title}
+              width={300}
+              height={450}
+              class="rounded-lg shadow-lg mb-2"
+            />
+            <p class="text-sm text-center">{p.title}</p>
+            <button class="mt-2 block mx-auto text-yellow-500 text-sm hover:underline">
+              Play Trailer
+            </button>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- 
+  <div
+    class="bg-[rgba(0,0,0,0.7)] relative z-10 max-w-4xl w-full rounded-lg p-8 flex flex-col md:flex-row items-center md:items-start gap-8"
+  >
     <div class="flex-shrink-0 max-w-xs w-full">
       {
         movie?.poster_path ? (
@@ -73,27 +111,31 @@ const baseUrl = "https://image.tmdb.org/t/p/w500";
         )
       }
     </div>
-
-    <div class="flex flex-col space-y-4 text-center md:text-left max-w-xl">
-      <div class="space-y-4 text-center md:text-left">
-        <h1 id="title" class="text-4xl font-bold leading-tight">
+     Right side: text + sticky button 
+    <div
+      class="flex flex-col justify-between max-h-[80vh] flex-1 w-full text-center md:text-left max-w-xl"
+    >
+       Scrollable text block 
+      <div class="overflow-y-auto pr-4 flex-grow">
+        <h1 id="title" class="text-4xl font-bold leading-tight mb-4">
           {movie?.title}
         </h1>
-        <div id="release" class="text-gray-300 text-sm font-medium">
+        <div id="release" class="text-gray-300 text-sm font-medium mb-4">
           Released: {movie?.release_date}
         </div>
         <p id="overview" class="text-gray-200 leading-relaxed">
           {movie?.overview}
         </p>
       </div>
-      <div class="flex justify-center md:justify-end mt-6">
+
+       Button pinned at bottom 
+      <div class="mt-6 flex justify-center md:justify-end shrink-0">
         <button
           id="randomBtn"
-          class=" rounded-md  transition-colors font-semibold z-10 "
+          class="rounded-md px-5 py-2 bg-blue-600 hover:bg-blue-700 transition-colors font-semibold"
         >
-           Pick Another Random Movie
+          Pick Another Random Movie
         </button>
       </div>
     </div>
-  </div>
-</section>
+  </div> -->
