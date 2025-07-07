@@ -1,6 +1,7 @@
 ---
 import { fetchJson } from "../functions/fetchJsonMWDP";
 import Image from "astro/components/Image.astro";
+import "../styles/global.css";
 
 let movie = null;
 let popularMovies = [];
@@ -40,102 +41,78 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
 
 <section
   id="hero"
-  class="relative min-h-screen flex items-center px-10 py-20 text-white overflow-hidden"
+  class="relative flex items-center min-h-screen px-10 py-20 overflow-hidden text-white"
   style={`background-image: url(${backdropBase + movie.backdrop_path}); background-size: cover; background-position: center;`}
 >
   <div
-    class="relative z-10 flex flex-col md:flex-row justify-between w-full max-w-7xl mx-auto gap-10"
+    class="relative z-10 flex flex-col justify-between w-full gap-10 mx-auto max-w-7xl md:flex-row"
   >
     <!-- Left: Movie Info -->
-    <div class="flex flex-col max-w-xl">
-      <h1 id="title" class="text-5xl font-bold mb-4" >{movie?.title}</h1>
-      <div class="flex items-center text-sm text-gray-300 mb-4">
-        <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
-        <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
-        <span id="vote-count">⏱️ {movie?.vote_count} votes</span>
+    <div
+      class="flex flex-col justify-between  max-w-xl bg-[rgba(0,0,0,0.7)] p-6 rounded-lg shadow-lg"
+    >
+      <div class="flex flex-col items-start">
+        <h1 id="title" class="mb-4 text-5xl font-bold">{movie?.title}</h1>
+        <div class="flex items-center mb-4 text-sm text-gray-300">
+          <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
+          <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
+          <span id="vote-count">⏱️ {movie?.vote_count} votes</span>
+        </div>
+        <p
+          id="overview"
+          class="mb-4 overflow-hidden text-gray-200 transition-all duration-300 line-clamp-3"
+        >
+          {movie?.overview}
+        </p>
+<!--         <button
+          id="seeMoreBtn"
+          class="hidden text-sm text-yellow-400 hover:underline"
+        >
+          See more
+        </button> -->
       </div>
-      <p class="text-gray-200 mb-8" id="overview">{movie?.overview}</p>
       <div class="flex gap-4">
         <button
-          class="bg-yellow-500 text-black px-6 py-3 rounded-md font-semibold hover:bg-yellow-600 transition"
+          class="px-6 py-3 font-semibold text-black transition bg-yellow-500 rounded-md hover:bg-yellow-600"
           id="randomBtn">🔃 Random</button
         >
         <button
-          class="border border-yellow-500 px-6 py-3 rounded-md font-semibold hover:bg-yellow-500 hover:text-black transition"
+          class="px-6 py-3 font-semibold transition border border-yellow-500 rounded-md hover:bg-yellow-500 hover:text-black"
           >💾 Save For Later</button
         >
       </div>
     </div>
 
     <!-- Right: Movie Posters -->
-    <div class="flex gap-6 overflow-x-auto w-1/2">
+    <div
+      class="flex gap-4 overflow-x-auto md:w-1/2 whitespace-nowrap hide-scrollbar"
+    >
       {
-        popularMovies.map((p) => (
-          <div class="flex-shrink-0 w-40">
-            <Image
-              src={posterBase + p.poster_path}
-              alt={p.title}
-              width={300}
-              height={450}
-              class="rounded-lg shadow-lg mb-2"
-            />
-            <p class="text-sm text-center">{p.title}</p>
-            <button class="mt-2 block mx-auto text-yellow-500 text-sm hover:underline">
-              Play Trailer
-            </button>
-          </div>
-        ))
+        popularMovies.map((p) =>
+          p.poster_path ? (
+            <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+              <Image
+                src={posterBase + p.poster_path}
+                alt={p.title}
+                width={300}
+                height={450}
+                class="mb-2 rounded-lg shadow-lg"
+                loading="eager"
+              />
+              <p class="text-sm text-center">{p.title}</p>
+              <button class="block mx-auto mt-2 text-sm text-yellow-500 hover:underline">
+                Play Trailer
+              </button>
+            </div>
+          ) : (
+            <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+              <p class="text-sm text-center text-gray-400">
+                No Poster Available
+              </p>
+            </div>
+          )
+        )
       }
     </div>
   </div>
 </section>
-
-<!-- 
-  <div
-    class="bg-[rgba(0,0,0,0.7)] relative z-10 max-w-4xl w-full rounded-lg p-8 flex flex-col md:flex-row items-center md:items-start gap-8"
-  >
-    <div class="flex-shrink-0 max-w-xs w-full">
-      {
-        movie?.poster_path ? (
-          <Image
-            id="poster"
-            src={baseUrl + movie.poster_path}
-            alt={`Poster of ${movie.title}`}
-            class="rounded-lg shadow-lg w-full"
-            width={300}
-            height={450}
-            loading="eager"
-          />
-        ) : (
-          <p class="text-gray-400">No poster available</p>
-        )
-      }
-    </div>
-     Right side: text + sticky button 
-    <div
-      class="flex flex-col justify-between max-h-[80vh] flex-1 w-full text-center md:text-left max-w-xl"
-    >
-       Scrollable text block 
-      <div class="overflow-y-auto pr-4 flex-grow">
-        <h1 id="title" class="text-4xl font-bold leading-tight mb-4">
-          {movie?.title}
-        </h1>
-        <div id="release" class="text-gray-300 text-sm font-medium mb-4">
-          Released: {movie?.release_date}
-        </div>
-        <p id="overview" class="text-gray-200 leading-relaxed">
-          {movie?.overview}
-        </p>
-      </div>
-
-       Button pinned at bottom 
-      <div class="mt-6 flex justify-center md:justify-end shrink-0">
-        <button
-          id="randomBtn"
-          class="rounded-md px-5 py-2 bg-blue-600 hover:bg-blue-700 transition-colors font-semibold"
-        >
-          Pick Another Random Movie
-        </button>
-      </div>
-    </div>
-  </div> -->

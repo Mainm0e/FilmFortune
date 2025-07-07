@@ -23,7 +23,6 @@
       titleEl.textContent = movie.title;
       releaseEl.textContent = "Released: " + movie.release_date;
       overviewEl.textContent = movie.overview || "";
-  
 
       /*   if (movie.poster_path) {
         posterEl.src = baseUrl + movie.poster_path;
@@ -38,7 +37,7 @@
         backdropEl.style.backgroundImage = `url(${originalUrl + movie.backdrop_path})`;
       } else {
         backdropEl.style.backgroundImage = "";
-      } 
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to get a random movie");
@@ -46,4 +45,28 @@
     btn.disabled = false;
     btn.textContent = "🔃 Random";
   });
+
+  const seeMoreBtn = document.getElementById("seeMoreBtn");
+
+  // After you set overview text:
+  overviewEl.textContent = movie.overview || "";
+
+  // Use a timeout to wait for the DOM to render updated text
+  setTimeout(() => {
+    if (overviewEl.scrollHeight > overviewEl.clientHeight) {
+      seeMoreBtn.classList.remove("hidden");
+    } else {
+      seeMoreBtn.classList.add("hidden");
+    }
+  }, 50);
+
+  seeMoreBtn.textContent = "See more";
+  seeMoreBtn.onclick = () => {
+    overviewEl.classList.toggle("line-clamp-3");
+    if (overviewEl.classList.contains("line-clamp-3")) {
+      seeMoreBtn.textContent = "See more";
+    } else {
+      seeMoreBtn.textContent = "See less";
+    }
+  };
 </script>
