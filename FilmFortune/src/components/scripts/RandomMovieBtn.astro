@@ -15,24 +15,35 @@
   btn.addEventListener("click", async () => {
     btn.disabled = true;
     btn.textContent = "Loading...";
+
+    // ⏬ Get filter values from the form
+    const genre = document.getElementById("genre").value;
+    const language = document.getElementById("language").value;
+    const yearFrom = document.getElementById("yearFrom").value;
+    const yearTo = document.getElementById("yearTo").value;
+
+    // ⏬ Build query string
+    const params = new URLSearchParams();
+    if (genre) params.append("genre", genre);
+    if (language) params.append("language", language);
+    if (yearFrom) params.append("yearFrom", yearFrom);
+    if (yearTo) params.append("yearTo", yearTo);
+
+    // ⏬ Build full URL
+    const url = `/api/random-movie?${params.toString()}`;
+
     try {
-      const res = await fetch("/api/random-movie");
+      console.log("Fetching random movie from:", url);
+      // ⏬ Fetch random movie from the API
+      const res = await fetch(url);
       const movie = await res.json();
       console.log(movie);
 
+      // ⏬ Update DOM as usual
       titleEl.textContent = movie.title;
       releaseEl.textContent = "Released: " + movie.release_date;
       overviewEl.textContent = movie.overview || "";
 
-      /*   if (movie.poster_path) {
-        posterEl.src = baseUrl + movie.poster_path;
-        posterEl.alt = `Poster of ${movie.title}`;
-      } else {
-        posterEl.src = "";
-        posterEl.alt = "No poster";
-      } 
-
-      */
       if (movie.backdrop_path) {
         backdropEl.style.backgroundImage = `url(${originalUrl + movie.backdrop_path})`;
       } else {
@@ -42,31 +53,8 @@
       console.error(err);
       alert("Failed to get a random movie");
     }
+
     btn.disabled = false;
     btn.textContent = "🔃 Random";
   });
-
-  const seeMoreBtn = document.getElementById("seeMoreBtn");
-
-  // After you set overview text:
-  overviewEl.textContent = movie.overview || "";
-
-  // Use a timeout to wait for the DOM to render updated text
-  setTimeout(() => {
-    if (overviewEl.scrollHeight > overviewEl.clientHeight) {
-      seeMoreBtn.classList.remove("hidden");
-    } else {
-      seeMoreBtn.classList.add("hidden");
-    }
-  }, 50);
-
-  seeMoreBtn.textContent = "See more";
-  seeMoreBtn.onclick = () => {
-    overviewEl.classList.toggle("line-clamp-3");
-    if (overviewEl.classList.contains("line-clamp-3")) {
-      seeMoreBtn.textContent = "See more";
-    } else {
-      seeMoreBtn.textContent = "See less";
-    }
-  };
 </script>

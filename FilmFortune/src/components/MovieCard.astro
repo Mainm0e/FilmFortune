@@ -2,9 +2,10 @@
 import { fetchJson } from "../functions/fetchJsonMWDP";
 import Image from "astro/components/Image.astro";
 import "../styles/global.css";
-
+export const prerender = false;
 let movie = null;
 let popularMovies = [];
+
 
 try {
   const MAX_PAGE = 500;
@@ -49,7 +50,7 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
   >
     <!-- Left: Movie Info -->
     <div
-      class="flex flex-col justify-between  max-w-xl bg-[rgba(0,0,0,0.7)] p-6 rounded-lg shadow-lg"
+      class="flex flex-col justify-between max-w-xl bg-[rgba(0,0,0,0.7)] p-6 rounded-lg shadow-lg"
     >
       <div class="flex flex-col items-start">
         <h1 id="title" class="mb-4 text-5xl font-bold">{movie?.title}</h1>
@@ -64,7 +65,7 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
         >
           {movie?.overview}
         </p>
-<!--         <button
+        <!--         <button
           id="seeMoreBtn"
           class="hidden text-sm text-yellow-400 hover:underline"
         >
@@ -72,10 +73,6 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
         </button> -->
       </div>
       <div class="flex gap-4">
-        <button
-          class="px-6 py-3 font-semibold text-black transition bg-yellow-500 rounded-md hover:bg-yellow-600"
-          id="randomBtn">🔃 Random</button
-        >
         <button
           class="px-6 py-3 font-semibold transition border border-yellow-500 rounded-md hover:bg-yellow-500 hover:text-black"
           >💾 Save For Later</button
@@ -115,4 +112,52 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
       }
     </div>
   </div>
+  <form
+    id="filterForm"
+    class="flex gap-4 flex-wrap mb-6 bg-[rgba(0,0,0,0.5)] p-4 rounded"
+  >
+    <label class="flex flex-col text-sm">
+      Genre:
+      <select id="genre" class="p-2 text-black rounded">
+        <option value="">Any</option>
+        <option value="28">Action</option>
+        <option value="35">Comedy</option>
+        <option value="18">Drama</option>
+      </select>
+    </label>
+
+    <label class="flex flex-col text-sm">
+      Language:
+      <select id="language" class="p-2 text-black rounded">
+        <option value="">Any</option>
+        <option value="en">English</option>
+        <option value="ko">Korean</option>
+        <option value="ja">Japanese</option>
+      </select>
+    </label>
+
+    <label class="flex flex-col text-sm">
+      Year From:
+      <input
+        type="number"
+        id="yearFrom"
+        placeholder="e.g. 2000"
+        class="p-2 text-black rounded w-28"
+      />
+    </label>
+
+    <label class="flex flex-col text-sm">
+      Year To:
+      <input
+        type="number"
+        id="yearTo"
+        placeholder="e.g. 2024"
+        class="p-2 text-black rounded w-28"
+      />
+    </label>
+    <button
+      class="px-6 py-3 font-semibold text-black transition bg-yellow-500 rounded-md hover:bg-yellow-600"
+      id="randomBtn">🔃 Random</button
+    >
+  </form>
 </section>
