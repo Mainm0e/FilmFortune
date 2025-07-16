@@ -1,0 +1,66 @@
+---
+import { Image } from "astro:assets";
+import { fetchJson } from "../functions/fetchJsonMWDP";
+
+
+
+let popularMovies = [];
+const posterBase = "https://image.tmdb.org/t/p/w500";
+
+
+try {
+  const MAX_PAGE = 500;
+  const firstPageData = await fetchJson(
+    "https://api.themoviedb.org/3/movie/popular"
+  );
+  const totalPages = Math.min(firstPageData.total_pages || 1, MAX_PAGE);
+
+  const today = new Date();
+  const seed = parseInt(
+    `${today.getFullYear()}${(today.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}${today.getDate().toString().padStart(2, "0")}`
+  );
+
+  const randomPage = (seed % totalPages) + 1;
+  const randomPageData = await fetchJson(
+    `https://api.themoviedb.org/3/movie/popular?page=${randomPage}`
+  );
+  const movies = randomPageData.results || [];
+
+  // Get first 4 for the poster row
+  popularMovies = movies.slice(0, 10);
+} catch (err) {
+  console.error(err);
+}
+---
+
+<!-- Right: Movie Posters -->
+<div
+  class="flex gap-4 overflow-x-auto md:w-1/2 whitespace-nowrap hide-scrollbar"
+>
+  {
+    popularMovies.map((p) =>
+      p.poster_path ? (
+        <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+          <Image
+            src={posterBase + p.poster_path}
+            alt={p.title}
+            width={300}
+            height={450}
+            class="mb-2 rounded-lg shadow-lg"
+            loading="eager"
+          />
+          <p class="text-sm text-center">{p.title}</p>
+          <button class="block mx-auto mt-2 text-sm text-yellow-500 hover:underline">
+            Play Trailer
+          </button>
+        </div>
+      ) : (
+        <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+          <p class="text-sm text-center text-gray-400">No Poster Available</p>
+        </div>
+      )
+    )
+  }
+</div>

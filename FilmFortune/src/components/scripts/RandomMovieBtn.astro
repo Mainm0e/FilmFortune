@@ -1,45 +1,53 @@
 ---
 
 ---
-
 <script is:inline>
   const baseUrl = "https://image.tmdb.org/t/p/w500";
   const originalUrl = "https://image.tmdb.org/t/p/original";
+
   const btn = document.getElementById("randomBtn");
   const titleEl = document.getElementById("title");
   const releaseEl = document.getElementById("release-date");
-  const posterEl = document.getElementById("poster");
-  const backdropEl = document.getElementById("hero");
   const overviewEl = document.getElementById("overview");
+  const backdropEl = document.getElementById("hero");
+  const providersEl = document.getElementById("providers");
 
   btn.addEventListener("click", async () => {
     btn.disabled = true;
     btn.textContent = "Loading...";
 
-    // ⏬ Get filter values from the form
     const genre = document.getElementById("genre").value;
     const language = document.getElementById("language").value;
     const yearFrom = document.getElementById("yearFrom").value;
     const yearTo = document.getElementById("yearTo").value;
+    const rating = document.getElementById("rating").value;
+    const country = document.getElementById("country").value;
 
-    // ⏬ Build query string
     const params = new URLSearchParams();
     if (genre) params.append("genre", genre);
     if (language) params.append("language", language);
     if (yearFrom) params.append("yearFrom", yearFrom);
     if (yearTo) params.append("yearTo", yearTo);
+    if (rating) params.append("rating", rating);
+    if (country) params.append("country", country);
 
-    // ⏬ Build full URL
+    const services = Array.from(document.querySelectorAll('input[name="service"]:checked'))
+      .map(cb => cb.value);
+    services.forEach(service => params.append("service", service));
+
     const url = `/api/random-movie?${params.toString()}`;
 
     try {
-      console.log("Fetching random movie from:", url);
-      // ⏬ Fetch random movie from the API
       const res = await fetch(url);
       const movie = await res.json();
-      console.log(movie);
 
-      // ⏬ Update DOM as usual
+       if (!movie) {
+    alert("No matching movie found. Try different filters!");
+    btn.disabled = false;
+    btn.textContent = "Random";
+    return;
+  }
+
       titleEl.textContent = movie.title;
       releaseEl.textContent = "Released: " + movie.release_date;
       overviewEl.textContent = movie.overview || "";
@@ -49,12 +57,25 @@
       } else {
         backdropEl.style.backgroundImage = "";
       }
+
+      providersEl.innerHTML = "";
+      if (movie.providers && movie.providers.length) {
+        movie.providers.forEach(p => {
+          const img = document.createElement("img");
+          img.src = p.logo;
+          img.alt = p.name;
+          img.title = p.name;
+          img.style.marginRight = "8px";
+          providersEl.appendChild(img);
+        });
+      }
+
     } catch (err) {
       console.error(err);
-      alert("Failed to get a random movie");
+      alert("Failed to fetch a movie!");
     }
 
     btn.disabled = false;
-    btn.textContent = "🔃 Random";
+    btn.textContent = "Random";
   });
 </script>

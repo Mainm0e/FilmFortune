@@ -3,12 +3,22 @@ import { fetchJson } from "../functions/fetchJsonMWDP";
 import Image from "astro/components/Image.astro";
 import "../styles/global.css";
 export const prerender = false;
+
+interface Movie {
+  title: string;
+  release_date: string;
+  overview: string;
+  backdrop_path: string;
+  poster_path: string;
+  vote_average: number;
+  vote_count: number;
+}
+
 let movie = null;
 let popularMovies = [];
 
-
 try {
-  const MAX_PAGE = 500;
+  const MAX_PAGE = 100;
   const firstPageData = await fetchJson(
     "https://api.themoviedb.org/3/movie/popular"
   );
@@ -29,8 +39,6 @@ try {
 
   const movieIndex = seed % movies.length;
   movie = movies[movieIndex];
-
-  // Get first 4 for the poster row
   popularMovies = movies.slice(0, 10);
 } catch (err) {
   console.error(err);
@@ -42,122 +50,188 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
 
 <section
   id="hero"
-  class="relative flex items-center min-h-screen px-10 py-20 overflow-hidden text-white"
-  style={`background-image: url(${backdropBase + movie.backdrop_path}); background-size: cover; background-position: center;`}
+  class="relative flex flex-col items-center justify-end min-h-screen px-4 py-6 overflow-hidden text-white bg-center bg-no-repeat bg-cover md:px-20 md:py-10 md:items-start"
+  style={`background-image: url(${backdropBase + movie.backdrop_path});`}
 >
-  <div
-    class="relative z-10 flex flex-col justify-between w-full gap-10 mx-auto max-w-7xl md:flex-row"
-  >
-    <!-- Left: Movie Info -->
-    <div
-      class="flex flex-col justify-between max-w-xl bg-[rgba(0,0,0,0.7)] p-6 rounded-lg shadow-lg"
-    >
-      <div class="flex flex-col items-start">
-        <h1 id="title" class="mb-4 text-5xl font-bold">{movie?.title}</h1>
-        <div class="flex items-center mb-4 text-sm text-gray-300">
-          <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
-          <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
-          <span id="vote-count">⏱️ {movie?.vote_count} votes</span>
-        </div>
-        <p
-          id="overview"
-          class="mb-4 overflow-hidden text-gray-200 transition-all duration-300 line-clamp-3"
-        >
-          {movie?.overview}
-        </p>
-        <!--         <button
-          id="seeMoreBtn"
-          class="hidden text-sm text-yellow-400 hover:underline"
-        >
-          See more
-        </button> -->
-      </div>
-      <div class="flex gap-4">
-        <button
-          class="px-6 py-3 font-semibold transition border border-yellow-500 rounded-md hover:bg-yellow-500 hover:text-black"
-          >💾 Save For Later</button
-        >
-      </div>
-    </div>
+  <!-- Overlay for darkening -->
 
-    <!-- Right: Movie Posters -->
-    <div
-      class="flex gap-4 overflow-x-auto md:w-1/2 whitespace-nowrap hide-scrollbar"
-    >
-      {
-        popularMovies.map((p) =>
-          p.poster_path ? (
-            <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
-              <Image
-                src={posterBase + p.poster_path}
-                alt={p.title}
-                width={300}
-                height={450}
-                class="mb-2 rounded-lg shadow-lg"
-                loading="eager"
+  <div class="relative z-10 flex flex-col w-full h-64 md:flex-row flip-card">
+    <div class="flip-card-inner">
+      <!-- Front: Movie Info -->
+      <div class="flip-card-front">
+        <div class="flex flex-col items-start">
+          <h1 id="title" class="mb-4 text-2xl font-bold md:text-5xl">{movie?.title}</h1>
+          <div class="flex items-center mb-4 text-sm text-gray-300">
+            <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
+            <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
+            <span id="vote-count">⏱️ {movie?.vote_count} votes</span>
+          </div>
+          <p
+            id="overview"
+            class="mb-4 overflow-hidden text-gray-200 transition-all duration-300 line-clamp-3 text-start"
+          >
+            {movie?.overview}
+          </p>
+          <div id="providers" class="flex flex-wrap gap-2 mt-4"></div>
+        </div>
+      </div>
+      <!-- Back: Filters Panel (hidden in other side) -->
+      <div class="flip-card-back" id="filtersContainer">
+        <form
+          id="filters"
+          class="flex-wrap items-start justify-start max-w-lg gap-4 p-6 transition-all duration-300 bg-black rounded-lg md:flex bg-opacity-70"
+        >
+          <select
+            id="genre"
+            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <option value="">Any Genre</option>
+            <option value="28">Action</option>
+            <option value="35">Comedy</option>
+          </select>
+
+          <select
+            id="language"
+            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <option value="">Any Language</option>
+            <option value="en">English</option>
+            <option value="fi">Finnish</option>
+          </select>
+
+          <input
+            type="number"
+            id="yearFrom"
+            placeholder="Year From"
+            min="1900"
+            max="2100"
+            class="w-24 px-4 py-2 text-white placeholder-gray-400 bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          />
+
+          <input
+            type="number"
+            id="yearTo"
+            placeholder="Year To"
+            min="1900"
+            max="2100"
+            class="w-24 px-4 py-2 text-white placeholder-gray-400 bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          />
+
+          <select
+            id="rating"
+            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <option value="">Any Rating</option>
+            <option value="K-12">K-12</option>
+            <option value="15">15</option>
+            <option value="18">18</option>
+          </select>
+
+          <select
+            id="country"
+            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <option value="US">🇺🇸 US</option>
+            <option value="FI">🇫🇮 Finland</option>
+            <option value="GB">🇬🇧 UK</option>
+          </select>
+
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="service"
+                value="Netflix"
+                class="accent-yellow-500"
               />
-              <p class="text-sm text-center">{p.title}</p>
-              <button class="block mx-auto mt-2 text-sm text-yellow-500 hover:underline">
-                Play Trailer
-              </button>
-            </div>
-          ) : (
-            <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
-              <p class="text-sm text-center text-gray-400">
-                No Poster Available
-              </p>
-            </div>
-          )
-        )
-      }
+              Netflix
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="service"
+                value="Disney Plus"
+                class="accent-yellow-500"
+              />
+              Disney+
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="service"
+                value="Hulu"
+                class="accent-yellow-500"
+              />
+              Hulu
+            </label>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-  <form
-    id="filterForm"
-    class="flex gap-4 flex-wrap mb-6 bg-[rgba(0,0,0,0.5)] p-4 rounded"
+  
+  <!-- function btn -->
+<!-- Function buttons bar -->
+<div class="z-20 flex items-center justify-center gap-4 px-4 bottom-4">
+  <button
+    id="toggleFiltersBtn"
+    class="function-button"
   >
-    <label class="flex flex-col text-sm">
-      Genre:
-      <select id="genre" class="p-2 text-black rounded">
-        <option value="">Any</option>
-        <option value="28">Action</option>
-        <option value="35">Comedy</option>
-        <option value="18">Drama</option>
-      </select>
-    </label>
+    🔍 Filters
+  </button>
+  <button
+    class="function-button"
+  >
+     See more
+  </button>
+  <button
+    type="button"
+    id="randomBtn"
+    class="function-button"
+  >
+     Random
+  </button>
+</div>
 
-    <label class="flex flex-col text-sm">
-      Language:
-      <select id="language" class="p-2 text-black rounded">
-        <option value="">Any</option>
-        <option value="en">English</option>
-        <option value="ko">Korean</option>
-        <option value="ja">Japanese</option>
-      </select>
-    </label>
+  <!-- Dark overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
 
-    <label class="flex flex-col text-sm">
-      Year From:
-      <input
-        type="number"
-        id="yearFrom"
-        placeholder="e.g. 2000"
-        class="p-2 text-black rounded w-28"
-      />
-    </label>
-
-    <label class="flex flex-col text-sm">
-      Year To:
-      <input
-        type="number"
-        id="yearTo"
-        placeholder="e.g. 2024"
-        class="p-2 text-black rounded w-28"
-      />
-    </label>
-    <button
-      class="px-6 py-3 font-semibold text-black transition bg-yellow-500 rounded-md hover:bg-yellow-600"
-      id="randomBtn">🔃 Random</button
-    >
-  </form>
 </section>
+
+<div
+  class="flex gap-4 overflow-x-auto md:w-1/2 whitespace-nowrap hide-scrollbar"
+>
+  {
+    popularMovies.map((p: Movie) =>
+      p.poster_path ? (
+        <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+          <Image
+            src={posterBase + p.poster_path}
+            alt={p.title}
+            width={300}
+            height={450}
+            class="mb-2 rounded-lg shadow-lg"
+            loading="eager"
+          />
+          <p class="text-sm text-center">{p.title}</p>
+          <button class="block mx-auto mt-2 text-sm text-yellow-500 hover:underline">
+            Play Trailer
+          </button>
+        </div>
+      ) : (
+        <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
+          <p class="text-sm text-center text-gray-400">No Poster Available</p>
+        </div>
+      )
+    )
+  }
+</div>
+
+<script is:inline>
+  const toggleBtn = document.getElementById("toggleFiltersBtn");
+  const flipCardInner = document.querySelector(".flip-card-inner");
+
+  toggleBtn.addEventListener("click", () => {
+    flipCardInner.classList.toggle("flipped");
+  });
+</script>
