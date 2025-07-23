@@ -39,7 +39,7 @@ try {
 
   const movieIndex = seed % movies.length;
   movie = movies[movieIndex];
-  popularMovies = movies.slice(0, 10);
+  popularMovies = movies.slice(0, 20);
 } catch (err) {
   console.error(err);
 }
@@ -132,13 +132,13 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
 </section>
 
 <div
-  class="flex gap-4 overflow-x-auto md:w-1/2 whitespace-nowrap hide-scrollbar"
+  class="flex gap-4 overflow-x-auto whitespace-nowrap hide-scrollbar"
 >
   {
     popularMovies.map((p: Movie) =>
       p.poster_path ? (
         <div class="flex-shrink-0 w-48 p-2 bg-[rgba(0,0,0,0.5)] rounded-lg shadow-md">
-          <Image
+          <img
             src={posterBase + p.poster_path}
             alt={p.title}
             width={300}
