@@ -53,14 +53,14 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
   class="relative flex flex-col items-center justify-end min-h-screen px-4 py-6 overflow-hidden text-white bg-center bg-no-repeat bg-cover md:px-20 md:py-10 md:items-start"
   style={`background-image: url(${backdropBase + movie.backdrop_path});`}
 >
-  <!-- Overlay for darkening -->
-
   <div class="relative z-10 flex flex-col w-full h-64 md:flex-row flip-card">
     <div class="flip-card-inner">
       <!-- Front: Movie Info -->
       <div class="flip-card-front">
         <div class="flex flex-col items-start">
-          <h1 id="title" class="mb-4 text-2xl font-bold md:text-5xl">{movie?.title}</h1>
+          <h1 id="title" class="mb-4 text-2xl font-bold md:text-5xl">
+            {movie?.title}
+          </h1>
           <div class="flex items-center mb-4 text-sm text-gray-300">
             <span class="mr-4" id="vote-average">⭐ {movie?.vote_average}</span>
             <span class="mr-4" id="release-date">📅 {movie?.release_date}</span>
@@ -79,123 +79,56 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
       <div class="flip-card-back" id="filtersContainer">
         <form
           id="filters"
-          class="flex-wrap items-start justify-start max-w-lg gap-4 p-6 transition-all duration-300 bg-black rounded-lg md:flex bg-opacity-70"
+          class="flex flex-col flex-wrap items-start justify-start max-w-lg gap-6 p-6 transition-all duration-300 md:flex-row bg-opacity-70 "
         >
-          <select
-            id="genre"
-            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          >
-            <option value="">Any Genre</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-          </select>
-
-          <select
-            id="language"
-            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          >
-            <option value="">Any Language</option>
-            <option value="en">English</option>
-            <option value="fi">Finnish</option>
-          </select>
-
-          <input
-            type="number"
-            id="yearFrom"
-            placeholder="Year From"
-            min="1900"
-            max="2100"
-            class="w-24 px-4 py-2 text-white placeholder-gray-400 bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          />
-
-          <input
-            type="number"
-            id="yearTo"
-            placeholder="Year To"
-            min="1900"
-            max="2100"
-            class="w-24 px-4 py-2 text-white placeholder-gray-400 bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          />
-
-          <select
-            id="rating"
-            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          >
-            <option value="">Any Rating</option>
-            <option value="K-12">K-12</option>
-            <option value="15">15</option>
-            <option value="18">18</option>
-          </select>
-
-          <select
-            id="country"
-            class="px-4 py-2 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          >
-            <option value="US">🇺🇸 US</option>
-            <option value="FI">🇫🇮 Finland</option>
-            <option value="GB">🇬🇧 UK</option>
-          </select>
-
-          <div class="flex flex-col gap-2">
-            <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                name="service"
-                value="Netflix"
-                class="accent-yellow-500"
-              />
-              Netflix
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                name="service"
-                value="Disney Plus"
-                class="accent-yellow-500"
-              />
-              Disney+
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                name="service"
-                value="Hulu"
-                class="accent-yellow-500"
-              />
-              Hulu
-            </label>
+          <div class="flex flex-col w-full gap-4">
+            <h2 class="text-xl font-semibold text-white">Filter by Service</h2>
+            <div class="flex flex-row justify-center w-full gap-3 text-white">
+              <label
+                class="flex items-center gap-3 transition cursor-pointer hover:text-yellow-400"
+              >
+                <input
+                  type="checkbox"
+                  name="service"
+                  value="Netflix"
+                  class="w-5 h-5 transition duration-150 accent-yellow-500"
+                />
+                <span class="text-lg">Netflix</span>
+              </label>
+              <label
+                class="flex items-center gap-3 transition cursor-pointer hover:text-yellow-400"
+              >
+                <input
+                  type="checkbox"
+                  name="service"
+                  value="Disney Plus"
+                  class="w-5 h-5 transition duration-150 accent-yellow-500"
+                />
+                <span class="text-lg">Disney+</span>
+              </label>
+             
+            </div>
           </div>
         </form>
       </div>
     </div>
   </div>
-  
+
   <!-- function btn -->
-<!-- Function buttons bar -->
-<div class="z-20 flex items-center justify-center gap-4 px-4 bottom-4">
-  <button
-    id="toggleFiltersBtn"
-    class="function-button"
-  >
-    🔍 Filters
-  </button>
-  <button
-    class="function-button"
-  >
-     See more
-  </button>
-  <button
-    type="button"
-    id="randomBtn"
-    class="function-button"
-  >
-     Random
-  </button>
-</div>
+  <!-- Function buttons bar -->
+  <div class="z-20 flex items-center justify-center gap-4 px-4 bottom-4">
+    <button id="toggleFiltersBtn" class="function-button"> 🔍 Filters </button>
+    <button class="function-button"> See more </button>
+    <button type="button" id="randomBtn" class="function-button">
+      Random
+    </button>
+  </div>
 
   <!-- Dark overlay -->
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-
+  <div
+    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+  >
+  </div>
 </section>
 
 <div

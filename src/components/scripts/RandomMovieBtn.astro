@@ -16,20 +16,20 @@
     btn.disabled = true;
     btn.textContent = "Loading...";
 
-    const genre = document.getElementById("genre").value;
+/*     const genre = document.getElementById("genre").value;
     const language = document.getElementById("language").value;
     const yearFrom = document.getElementById("yearFrom").value;
     const yearTo = document.getElementById("yearTo").value;
     const rating = document.getElementById("rating").value;
-    const country = document.getElementById("country").value;
+    const country = document.getElementById("country").value; */
 
     const params = new URLSearchParams();
-    if (genre) params.append("genre", genre);
+/*     if (genre) params.append("genre", genre);
     if (language) params.append("language", language);
     if (yearFrom) params.append("yearFrom", yearFrom);
     if (yearTo) params.append("yearTo", yearTo);
     if (rating) params.append("rating", rating);
-    if (country) params.append("country", country);
+    if (country) params.append("country", country); */
 
     const services = Array.from(document.querySelectorAll('input[name="service"]:checked'))
       .map(cb => cb.value);
@@ -77,5 +77,9 @@
 
     btn.disabled = false;
     btn.textContent = "Random";
+    // if flipcardinner has class "flipped", remove it
+    if (flipCardInner) {
+      flipCardInner.classList.remove("flipped");
+    }
   });
 </script>
