@@ -54,3 +54,70 @@ npm install
 
 # Start the dev server
 npm run dev
+
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   └── scripts
+│      └── RandomMovieBtn.astro
+│   └── MovieCard.astro
+│   └── Footer.astro
+│   └── MovieList.astro
+├── functions/
+│   └── fetchJsonMWDP.ts
+├── layouts/
+│   └── Layout.astro
+├── pages/
+│   └── index.astro
+├── styles/
+│   └── global.css
+
+```
+
+---
+
+## 🌐 Environment Variables
+
+Create a `.env` file with your TMDb API key:
+
+```
+TMDB_API_KEY=your_tmdb_api_key
+```
+
+---
+
+## 🧼 Custom CSS (Scrollbars)
+
+```css
+::-webkit-scrollbar {
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+```
+
+---
+
+## 📸 Screenshots
+
+_You can add more screenshots here as your project grows._
+
+---
+
+## 📄 License
+
+This project is licensed under [MIT](./LICENSE).
+
+---
+
+## ✨ Author
+
+**mainm0e (Adithep Tamwisai)**  
+🔗 [Portfolio](https://mainm0e.netlify.app/fi/)  
+👨‍💻 [Linkedin](https://www.linkedin.com/in/adithep-tamwisai-3b0a7525b/)  

@@ -1,22 +1,10 @@
 ---
 import { fetchJson } from "../functions/fetchJsonMWDP";
-import Image from "astro/components/Image.astro";
 import "../styles/global.css";
 export const prerender = false;
 
-interface Movie {
-  id: number;
-  title: string;
-  release_date: string;
-  overview: string;
-  backdrop_path: string;
-  poster_path: string;
-  vote_average: number;
-  vote_count: number;
-}
 
 let movie = null;
-let popularMovies = [];
 
 try {
   const MAX_PAGE = 100;
@@ -40,7 +28,6 @@ try {
 
   const movieIndex = seed % movies.length;
   movie = movies[movieIndex];
-  popularMovies = movies.slice(0, 20);
 } catch (err) {
   console.error(err);
 }
@@ -139,44 +126,6 @@ const posterBase = "https://image.tmdb.org/t/p/w500";
   </div>
 </section>
 
-<div class="relative w-full overflow-x-auto group whitespace-nowrap scroll-smooth bg-blue-950">
-  <div class="flex gap-4 px-4 py-4 animate-marquee-left">
-    {
-      [...popularMovies, ...popularMovies].map((p: Movie, i) =>
-        p.poster_path ? (
-          <div
-            key={i}
-            class="flex-shrink-0 w-48 p-3 transition-transform duration-300 shadow-lg bg-black/60 rounded-xl hover:scale-105 scroll-snap-start"
-          >
-            <img
-              src={posterBase + p.poster_path}
-              alt={p.title}
-              width={300}
-              height={450}
-              class="mb-3 rounded-lg shadow-md"
-              loading="eager"
-            />
-            <p class="h-10 text-sm font-semibold text-center text-white line-clamp-2">
-              {p.title}
-            </p>
-            <a
-              class="block mt-2 text-xs font-medium text-center text-blue-400 transition hover:text-blue-300"
-              href={`https://www.themoviedb.org/movie/${p.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              🔗 See more
-            </a>
-          </div>
-        ) : (
-          <div class="flex-shrink-0 w-48 h-[450px] flex flex-col items-center justify-center p-3 bg-gray-800/60 rounded-xl shadow-inner">
-            <p class="text-sm text-center text-gray-400">No Poster Available</p>
-          </div>
-        )
-      )
-    }
-  </div>
-</div>
 
 
 
