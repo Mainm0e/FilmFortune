@@ -6,6 +6,7 @@
   const originalUrl = "https://image.tmdb.org/t/p/original";
 
   const btn = document.getElementById("randomBtn");
+  const link = document.getElementById("seeMore");
   const titleEl = document.getElementById("title");
   const releaseEl = document.getElementById("release-date");
   const overviewEl = document.getElementById("overview");
@@ -51,6 +52,7 @@
       titleEl.textContent = movie.title;
       releaseEl.textContent = "Released: " + movie.release_date;
       overviewEl.textContent = movie.overview || "";
+      link.href = `https://www.themoviedb.org/movie/${movie.id}`;
 
       if (movie.backdrop_path) {
         backdropEl.style.backgroundImage = `url(${originalUrl + movie.backdrop_path})`;
